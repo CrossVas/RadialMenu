@@ -18,6 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+import java.awt.*;
+
 import static crossvas.mods.radialmenu.utils.RenderHelper.*;
 
 public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
@@ -52,17 +54,26 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
         matrixStack.translate(centerX, centerY, 0); // Translate for radial ring only
 
-        // base
+        // base circle
         RenderSystem.color4f(0F, 0F, 0F, 0.5F);
         RenderHelper.drawTorus(matrixStack, 0, 360);
 
         // center margin
-        RenderSystem.color4f(0F, 0F, 0F, 1F);
-        RenderHelper.drawTorus(matrixStack, (int) (INNER - 6), (int) (INNER - 4), 0, 360);
+        RenderSystem.color4f(1F, 1F, 1F, .6F);
+        RenderHelper.drawTorus(matrixStack, (int) (INNER - 7), (int) (INNER - 4), 0, 360);
 
         // center base
         RenderSystem.color4f(0F, 0F, 0F, 0.8F);
-        RenderHelper.drawTorus(matrixStack, 0, (int) (INNER - 4), 0, 360);
+        RenderHelper.drawTorus(matrixStack, 0, (int) (INNER - 7), 0, 360);
+
+        // innerMargin
+        RenderSystem.color4f(0F, 0F, 0F, .6F);
+        RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), 0, 360);
+
+        // outerMargin
+        RenderSystem.color4f(1F, 1F, 1F, .3F);
+        RenderHelper.drawTorus(matrixStack, (int) (OUTER - 3), (int) (OUTER), 0, 360);
+
         int[] starSlots = getCenteredStarSlots(types.length);
         MODE cur = group.getCurrentMode(stack);
         if (cur != null) {
@@ -99,16 +110,21 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
                 float hoveredStartAngle = -90F + 360F * (-0.5F + rawIndex) / 8;
                 // selection
-                RenderSystem.color4f(0F, 0F, 0F, 0.7F);
-                RenderHelper.drawTorus(matrixStack, hoveredStartAngle, 360F / 8);
+                RenderHelper.drawGradientTorus(matrixStack, INNER, OUTER + 3, hoveredStartAngle, 360F / 8,
+                        new Color(242, 213, 156, 150), new Color(255, 255, 255, 200), (int) (OUTER - INNER));
+
+                // inner margin selected
+                RenderSystem.color4f(0.949F, 0.835F, 0.612F, 0.6F);
+                RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / 8);
             } else {
                 selection = null;
             }
         }
 
-        // star
-        RenderSystem.color4f(1F, 1F, 1F, .5F);
-        RenderHelper.drawStar(matrixStack, 0, 0, OUTER + 5, 8);
+        // TODO: figure this out
+//        // star
+//        RenderSystem.color4f(1F, 1F, 1F, .5F);
+//        RenderHelper.drawStar(matrixStack, 0, 0, OUTER + 5, 8);
 
         RenderSystem.color4f(1, 1, 1, 1);
         matrixStack.popPose();
@@ -128,11 +144,19 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
             float angleDeg = (float) Math.toDegrees(angle);
 
+            boolean isSelected = selection == type;
+            float scale = isSelected ? 1.5F : 1.0F; // 30% larger if selected
+
             // draw icon
             Minecraft.getInstance().textureManager.bind(type.getIcon());
-            AbstractGui.blit(matrixStack, Math.round(x - 12), Math.round(y - 15), 24, 24, 0, 0, 18, 18, 18, 18);
+            matrixStack.pushPose();
+            matrixStack.translate(x, y, 0);
+            matrixStack.scale(scale, scale, 1.0F);
+            matrixStack.translate(-12, -15, 0);
+            AbstractGui.blit(matrixStack, 0, 0, 24, 24, 0, 0, 18, 18, 18, 18);
+            matrixStack.popPose();
 
-            if (selection == type) {
+            if (isSelected) {
                 // Play the sound only once if the mode is selected and different from the previous mode
                 if (lastSelectedMode != selection) {
                     IC2.AUDIO.playSound(Minecraft.getInstance().player, RadialMenu.id("sounds/selection.ogg"));

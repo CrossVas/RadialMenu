@@ -1,6 +1,7 @@
 package crossvas.mods.radialmenu.utils;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -9,6 +10,7 @@ import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector2f;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,31 @@ public class RenderHelper {
         }
         vertexBuffer.end();
         WorldVertexBufferUploader.end(vertexBuffer);
+    }
+
+    public static void drawGradientTorus(MatrixStack matrix, float innerCircle, float outerCircle, float startAngle, float sizeAngle, Color fromColor, Color toColor, int steps) {
+        for (int i = 0; i < steps; i++) {
+            float t = i / (float)(steps - 1);
+
+            float currentInner = innerCircle + (outerCircle - innerCircle) * (i / (float) steps);
+            float currentOuter = currentInner + ((outerCircle - innerCircle) / steps);
+
+            // interpolation
+            float r = lerp(fromColor.getRed(),   toColor.getRed(),   t) / 255f;
+            float g = lerp(fromColor.getGreen(), toColor.getGreen(), t) / 255f;
+            float b = lerp(fromColor.getBlue(),  toColor.getBlue(),  t) / 255f;
+            float a = lerp(fromColor.getAlpha(), toColor.getAlpha(), t) / 255f;
+
+            RenderSystem.color4f(r, g, b, a);
+            drawTorus(matrix, currentInner, currentOuter, startAngle, sizeAngle);
+        }
+
+        // reset to white
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    private static float lerp(float a, float b, float t) {
+        return a + (b - a) * t;
     }
 
     public static void drawStar(MatrixStack matrixStack, float centerX, float centerY, float radius, int points) {
