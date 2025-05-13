@@ -54,6 +54,8 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
         matrixStack.translate(centerX, centerY, 0); // Translate for radial ring only
 
+        // TODO: a method for draw+color?
+
         // base circle
         RenderSystem.color4f(0F, 0F, 0F, 0.5F);
         RenderHelper.drawTorus(matrixStack, 0, 360);
