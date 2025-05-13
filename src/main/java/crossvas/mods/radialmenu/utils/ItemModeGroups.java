@@ -28,9 +28,9 @@ public class ItemModeGroups {
         @Override
         public void setMode(PlayerEntity player, ItemStack stack, TubeToolMode mode) {
             CompoundNBT tag = stack.getOrCreateTag();
-            TubeAction existing = TubeAction.byIdOrDefault(tag.getString(ACTION_TAG));
-            if (existing != mode.action) {
-                tag.putString(ACTION_TAG, mode.action.getId());
+            TubeToolMode existing = getCurrentMode(stack);
+            if (existing != mode) {
+                tag.putInt(ACTION_TAG, mode.ordinal());
                 if (IC2.PLATFORM.isSimulating()) {
                     player.displayClientMessage(mode.action.getName(), false);
                 }
