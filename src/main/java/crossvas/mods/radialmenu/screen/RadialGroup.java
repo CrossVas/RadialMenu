@@ -76,16 +76,15 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
         RenderSystem.color4f(1F, 1F, 1F, .3F);
         RenderHelper.drawTorus(matrixStack, (int) (OUTER - 3), (int) (OUTER), 0, 360);
 
-        int[] starSlots = getCenteredStarSlots(types.length);
         MODE cur = group.getCurrentMode(stack);
         if (cur != null) {
 
             int section = cur.ordinal();
-            float sectionStartAngle = -90F + 360F * (-0.5F + section) / 8;
+            float sectionStartAngle = -90F + 360F * (-0.5F + section) / activeModes;
 
             // current
             RenderSystem.color4f(0F, 0F, 0F, 0.3F);
-            RenderHelper.drawTorus(matrixStack, sectionStartAngle, 360F / 8);
+            RenderHelper.drawTorus(matrixStack, sectionStartAngle, 360F / activeModes);
 
             double xDiff = mouseX - centerX;
             double yDiff = mouseY - centerY;
@@ -93,31 +92,25 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
             if (dist >= SELECT_RADIUS * SELECT_RADIUS) {
                 float angle = (float) Math.toDegrees(Math.atan2(yDiff, xDiff));
-                float selectionAngle = angle + 90F + (360F / (2F * 8));
+                float selectionAngle = angle + 90F + (360F / (2F * activeModes));
                 selectionAngle = (selectionAngle + 360F) % 360F;
-                int rawIndex = (int) (selectionAngle * 8 / 360F);
-                for (int i = 0; i < starSlots.length; i++) {
-                    if (starSlots[i] == rawIndex) {
-                        selection = types[i];
-                        break;
-                    }
-                }
-;
-                float startAngle = 360F * (-0.5F / 8) + angle;
-                float sizeAngle = 360F / 8;
+                int selectionDrawnPos = (int) (selectionAngle * activeModes / 360F);
+                selection = types[selectionDrawnPos];
+                float startAngle = 360F * (-0.5F / activeModes) + angle;
+                float sizeAngle = 360F / activeModes;
 
                 // draw selection line
                 RenderSystem.color4f(1F, 1F, 1F, 1F);
                 RenderHelper.drawTorus(matrixStack, INNER - 2.95F, INNER - 1f, startAngle, sizeAngle);
 
-                float hoveredStartAngle = -90F + 360F * (-0.5F + rawIndex) / 8;
+                float hoveredStartAngle = -90F + 360F * (-0.5F + selectionDrawnPos) / activeModes;
                 // selection
-                RenderHelper.drawGradientTorus(matrixStack, INNER, OUTER + 3, hoveredStartAngle, 360F / 8,
+                RenderHelper.drawGradientTorus(matrixStack, INNER, OUTER + 3, hoveredStartAngle, 360F / activeModes,
                         new Color(242, 213, 156, 150), new Color(255, 255, 255, 200), (int) (OUTER - INNER));
 
                 // inner margin selected
                 RenderSystem.color4f(0.949F, 0.835F, 0.612F, 0.6F);
-                RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / 8);
+                RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / activeModes);
             } else {
                 selection = null;
             }
@@ -135,16 +128,14 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
         RenderSystem.enableTexture();
         RenderSystem.color4f(1, 1, 1, 1);
 
-        for (int i = 0; i < types.length; i++) {
-            MODE type = types[i];
-            int starIndex = starSlots[i];
-            double angle = Math.toRadians(270 + 360 * ((float) starIndex / 8));
+        int position = 0;
+
+        for (MODE type : types) {
+            double angle = Math.toRadians(270 + 360 * ((float) position / activeModes));
             float offsetX = (float) Math.cos(angle) * (INNER + OUTER) / 2F;
             float offsetY = (float) Math.sin(angle) * (INNER + OUTER) / 2F;
             float x = centerX + offsetX;
             float y = centerY + offsetY;
-
-            float angleDeg = (float) Math.toDegrees(angle);
 
             boolean isSelected = selection == type;
             float scale = isSelected ? 1.5F : 1.0F; // 30% larger if selected
@@ -165,6 +156,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
                     lastSelectedMode = selection; // Update the last selected mode
                 }
             }
+            position++;
         }
 
         float centerLabelWidth = 108;
@@ -183,15 +175,6 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
         StringHelper.drawScrollingString(matrixStack, font, group.getModeMessage(),
                 centerX, centerY + font.lineHeight + 4, centerLabelWidth, centerLabelHeight,
                 0xFFFFFFFF);
-    }
-
-    public static int[] getCenteredStarSlots(int activeModes) {
-        int[] starSlots = new int[activeModes];
-        int offset = (8 - activeModes) / 2;
-        for (int i = 0; i < activeModes; i++) {
-            starSlots[i] = i + offset;
-        }
-        return starSlots;
     }
 
     void confirmSelection() {
