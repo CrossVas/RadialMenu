@@ -2,7 +2,6 @@ package crossvas.mods.radialmenu.utils;
 
 import crossvas.mods.radialmenu.radial.IRadialModeGroup;
 import ic2.core.IC2;
-import ic2.core.block.transport.item.TubeAction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

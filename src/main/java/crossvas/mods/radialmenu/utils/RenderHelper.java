@@ -20,8 +20,18 @@ public class RenderHelper {
     public static final float INNER = 60, OUTER = 120;
     public static final float SELECT_RADIUS = 60;
 
+    public static void drawTorus(MatrixStack matrix, float startAngle, float sizeAngle, float gl_r, float gl_g, float gl_b, float gl_a) {
+        RenderSystem.color4f(gl_r, gl_g, gl_b, gl_a);
+        drawTorus(matrix, startAngle, sizeAngle);
+    }
+
     public static void drawTorus(MatrixStack matrix, float startAngle, float sizeAngle) {
         drawTorus(matrix, (int) INNER, (int) OUTER, startAngle, sizeAngle);
+    }
+
+    public static void drawTorus(MatrixStack matrix, float innerCircle, float outerCircle, float startAngle, float sizeAngle, float gl_r, float gl_g, float gl_b, float gl_a) {
+        RenderSystem.color4f(gl_r, gl_g, gl_b, gl_a);
+        drawTorus(matrix, innerCircle, outerCircle, startAngle, sizeAngle);
     }
 
     public static void drawTorus(MatrixStack matrix, float innerCircle, float outerCircle, float startAngle, float sizeAngle) {

@@ -54,37 +54,24 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
         matrixStack.translate(centerX, centerY, 0); // Translate for radial ring only
 
-        // TODO: a method for draw+color?
-
         // base circle
-        RenderSystem.color4f(0F, 0F, 0F, 0.5F);
-        RenderHelper.drawTorus(matrixStack, 0, 360);
-
+        drawTorus(matrixStack, 0, 360, 0F, 0F, 0F, 0.5F);
         // center margin
-        RenderSystem.color4f(1F, 1F, 1F, .6F);
-        RenderHelper.drawTorus(matrixStack, (int) (INNER - 7), (int) (INNER - 4), 0, 360);
-
+        drawTorus(matrixStack, (int) (INNER - 7), (int) (INNER - 4), 0, 360, 1F, 1F, 1F, .6F);
         // center base
-        RenderSystem.color4f(0F, 0F, 0F, 0.8F);
-        RenderHelper.drawTorus(matrixStack, 0, (int) (INNER - 7), 0, 360);
-
+        RenderHelper.drawTorus(matrixStack, 0, (int) (INNER - 7), 0, 360, 0F, 0F, 0F, 0.8F);
         // innerMargin
-        RenderSystem.color4f(0F, 0F, 0F, .6F);
-        RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), 0, 360);
-
+        RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), 0, 360, 0F, 0F, 0F, .6F);
         // outerMargin
-        RenderSystem.color4f(1F, 1F, 1F, .3F);
-        RenderHelper.drawTorus(matrixStack, (int) (OUTER - 3), (int) (OUTER), 0, 360);
+        RenderHelper.drawTorus(matrixStack, (int) (OUTER - 3), (int) (OUTER), 0, 360, 1F, 1F, 1F, .3F);
 
         MODE cur = group.getCurrentMode(stack);
         if (cur != null) {
-
             int section = cur.ordinal();
             float sectionStartAngle = -90F + 360F * (-0.5F + section) / activeModes;
-
             // current
-            RenderSystem.color4f(0F, 0F, 0F, 0.3F);
-            RenderHelper.drawTorus(matrixStack, sectionStartAngle, 360F / activeModes);
+            RenderHelper.drawGradientTorus(matrixStack, INNER, OUTER + 3, sectionStartAngle, 360F / activeModes,
+                    new Color(242, 213, 156, 40), new Color(255, 255, 255, 40), (int) (OUTER - INNER));
 
             double xDiff = mouseX - centerX;
             double yDiff = mouseY - centerY;
@@ -100,17 +87,13 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
                 float sizeAngle = 360F / activeModes;
 
                 // draw selection line
-                RenderSystem.color4f(1F, 1F, 1F, 1F);
-                RenderHelper.drawTorus(matrixStack, INNER - 2.95F, INNER - 1f, startAngle, sizeAngle);
-
+                RenderHelper.drawTorus(matrixStack, INNER - 2.95F, INNER - 1f, startAngle, sizeAngle, 1F, 1F, 1F, 1F);
                 float hoveredStartAngle = -90F + 360F * (-0.5F + selectionDrawnPos) / activeModes;
                 // selection
                 RenderHelper.drawGradientTorus(matrixStack, INNER, OUTER + 3, hoveredStartAngle, 360F / activeModes,
                         new Color(242, 213, 156, 150), new Color(255, 255, 255, 200), (int) (OUTER - INNER));
-
                 // inner margin selected
-                RenderSystem.color4f(0.949F, 0.835F, 0.612F, 0.6F);
-                RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / activeModes);
+                RenderHelper.drawTorus(matrixStack, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / activeModes, 0.949F, 0.835F, 0.612F, 0.6F);
             } else {
                 selection = null;
             }
