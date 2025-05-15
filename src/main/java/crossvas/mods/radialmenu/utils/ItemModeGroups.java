@@ -5,13 +5,16 @@ import crossvas.mods.radialmenu.radial.IRadialEnum;
 import crossvas.mods.radialmenu.radial.IRadialModeGroup;
 import ic2.core.IC2;
 import ic2.core.block.transport.item.TubeAction;
+import ic2.core.utils.helpers.SanityHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,7 +29,7 @@ public class ItemModeGroups {
         List<IRadialEnum> wrappedActions = allActions.stream()
                 .map(action -> new RadialEnumWrapper<>(
                         action,
-                        TubeAction::getName,
+                        actionLookup -> new StringTextComponent(SanityHelper.firstLetterUppercase(SanityHelper.toPascalCase(action.getId().toLowerCase(Locale.ROOT)))),
                         a -> RadialMenu.id("textures/gui/blank.png"),
                         TubeAction::getDesc)
                 ).collect(Collectors.toList());
