@@ -94,7 +94,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
                 float sizeAngle = 360F / activeModes;
 
                 // draw selection line
-                RenderHelper.drawTorus(matrixStack, vertexBuffer, INNER - 2.95F, INNER - 1f, startAngle, sizeAngle, new Color(1F, 1F, 1F, 1F));
+                RenderHelper.drawTorus(matrixStack, vertexBuffer, INNER - 3F, INNER - 1f, startAngle, sizeAngle, new Color(1F, 1F, 1F, 1F));
                 float hoveredStartAngle = -90F + 360F * (-0.5F + selectionDrawnPos) / activeModes;
                 // selection
                 RenderHelper.drawGradientTorus(matrixStack, vertexBuffer, INNER, OUTER + 3, hoveredStartAngle, 360F / activeModes,
