@@ -105,13 +105,14 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
             }
         }
 
-        // TODO: figure this out
-//        // star
-//        RenderSystem.color4f(1F, 1F, 1F, .5F);
-//        RenderHelper.drawStar(matrixStack, 0, 0, OUTER + 5, 8);
-
         vertexBuffer.end();
         WorldVertexBufferUploader.end(vertexBuffer);
+
+        // star
+        RColor starColor = new RColor(1F, 1F, 1F, .3F);
+        if (activeModes >= 5) {
+            RenderHelper.drawStar(matrixStack, 0, 0, OUTER + 3, activeModes, starColor);
+        }
         matrixStack.popPose();
 
         // --- Render icons & scrolling text ---
@@ -128,7 +129,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
             float y = centerY + offsetY;
 
             boolean isSelected = selection == type;
-            float scale = isSelected ? 1.5F : 1.0F; // 30% larger if selected
+            float scale = isSelected ? 1.5F : 1.0F; // 50% larger if selected
 
             // draw icon
             Minecraft.getInstance().textureManager.bind(type.getIcon());

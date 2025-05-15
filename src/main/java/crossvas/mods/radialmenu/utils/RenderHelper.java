@@ -70,23 +70,24 @@ public class RenderHelper {
         return a + (b - a) * t;
     }
 
-    public static void drawStar(MatrixStack matrixStack, float centerX, float centerY, float radius, int points) {
+    public static void drawStar(MatrixStack matrixStack, float centerX, float centerY, float radius, int points, RColor color) {
         Matrix4f pose = matrixStack.last().pose();
         BufferBuilder buffer = Tessellator.getInstance().getBuilder();
-        buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+        GL11.glLineWidth(3.0f);
+        buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 
         List<Vector2f> mainPoints = new ArrayList<>();
         List<Vector2f> sidePoints = new ArrayList<>();
 
-        float innerRadius = radius * 0.46F;
+        float innerRadius = INNER + 15;
 
         for (int i = 0; i < points; i++) {
-            double angle = Math.toRadians((360.0 / points) * i);
+            double angle = Math.toRadians((360.0 / points) * i - 90);
             float mainX = centerX + (float) Math.cos(angle) * radius;
             float mainY = centerY + (float) Math.sin(angle) * radius;
             mainPoints.add(new Vector2f(mainX, mainY));
 
-            double sideAngle = Math.toRadians((360.0 / points) * i + (180.0 / points));
+            double sideAngle = Math.toRadians((360.0 / points) * i + (180.0 / points) - 90);
             float sideX = centerX + (float) Math.cos(sideAngle) * innerRadius;
             float sideY = centerY + (float) Math.sin(sideAngle) * innerRadius;
             sidePoints.add(new Vector2f(sideX, sideY));
@@ -97,14 +98,15 @@ public class RenderHelper {
             Vector2f next = mainPoints.get((i + 1) % points);
             Vector2f mid = sidePoints.get(i);
 
-            buffer.vertex(pose, mid.x, mid.y, 0).endVertex();
-            buffer.vertex(pose, prev.x, prev.y, 0).endVertex();
+            buffer.vertex(pose, mid.x, mid.y, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+            buffer.vertex(pose, prev.x, prev.y, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
 
-            buffer.vertex(pose, mid.x, mid.y, 0).endVertex();
-            buffer.vertex(pose, next.x, next.y, 0).endVertex();
+            buffer.vertex(pose, mid.x, mid.y, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+            buffer.vertex(pose, next.x, next.y, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
         }
 
         buffer.end();
         WorldVertexBufferUploader.end(buffer);
+        GL11.glLineWidth(1.0f);
     }
 }
