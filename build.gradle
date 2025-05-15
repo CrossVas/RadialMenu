@@ -128,6 +128,7 @@ dependencies {
 
     implementation fg.deobf("curse.maven:carbon-config-898104:6276163")
     implementation fg.deobf("curse.maven:curios-309927:4419403")
+    runtimeOnly fg.deobf("curse.maven:blur-268324:3271923")
 }
 
 mixin {
