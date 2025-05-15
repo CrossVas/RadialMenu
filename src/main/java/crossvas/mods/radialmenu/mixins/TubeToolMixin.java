@@ -15,7 +15,7 @@ public class TubeToolMixin implements IRadialModeItem {
     @Override
     public List<IRadialModeGroup<?>> getRadialGroups() {
         List<IRadialModeGroup<?>> groups = new ArrayList<>();
-        groups.add(new ItemModeGroups.TubeToolConfigGroup());
+        groups.add(new ItemModeGroups.TubeToolGroup());
         return groups;
     }
 }

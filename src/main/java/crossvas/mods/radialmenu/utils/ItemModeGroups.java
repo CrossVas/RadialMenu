@@ -1,37 +1,70 @@
 package crossvas.mods.radialmenu.utils;
 
+import crossvas.mods.radialmenu.RadialMenu;
+import crossvas.mods.radialmenu.radial.IRadialEnum;
 import crossvas.mods.radialmenu.radial.IRadialModeGroup;
 import ic2.core.IC2;
+import ic2.core.block.transport.item.TubeAction;
+import ic2.core.utils.helpers.SanityHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ItemModeGroups {
 
-    public static class TubeToolConfigGroup implements IRadialModeGroup<TubeToolMode> {
+    public static class TubeToolGroup implements IRadialModeGroup<IRadialEnum> {
 
         String ACTION_TAG = "action";
 
+        List<TubeAction> allActions = TubeAction.getAll();
+        List<IRadialEnum> wrappedActions = allActions.stream()
+                .map(action -> new RadialEnumWrapper<>(
+                        action,
+                        actionLookup -> new StringTextComponent(SanityHelper.firstLetterUppercase(SanityHelper.toPascalCase(action.getId().toLowerCase(Locale.ROOT)))),
+                        a -> RadialMenu.id("textures/gui/blank.png"),
+                        TubeAction::getDesc)
+                ).collect(Collectors.toList());
+
+        Map<String, IRadialEnum> actionLookup = wrappedActions.stream()
+                .collect(Collectors.toMap(
+                        e -> ((RadialEnumWrapper<TubeAction>) e).getTarget().getId(),
+                        Function.identity()
+                ));
+
         @Override
-        public Class<TubeToolMode> getModeClass() {
-            return TubeToolMode.class;
+        public Class<IRadialEnum> getModeClass() {
+            return IRadialEnum.class;
         }
 
         @Override
-        public TubeToolMode getCurrentMode(ItemStack stack) {
-            return TubeToolMode.getByIndex(stack.getOrCreateTag().getInt(ACTION_TAG));
+        public List<IRadialEnum> getAllModes() {
+            return wrappedActions;
         }
 
         @Override
-        public void setMode(PlayerEntity player, ItemStack stack, TubeToolMode mode) {
+        public IRadialEnum getCurrentMode(ItemStack stack) {
+            String id = stack.getOrCreateTag().getString(ACTION_TAG);
+            return actionLookup.getOrDefault(id, wrappedActions.get(0));
+        }
+
+        @Override
+        public void setMode(PlayerEntity player, ItemStack stack, IRadialEnum mode) {
             CompoundNBT tag = stack.getOrCreateTag();
-            TubeToolMode existing = getCurrentMode(stack);
+            IRadialEnum existing = getCurrentMode(stack);
             if (existing != mode) {
-                tag.putInt(ACTION_TAG, mode.ordinal());
+                TubeAction action = ((RadialEnumWrapper<TubeAction>) mode).getTarget();
+                tag.putString(ACTION_TAG, action.getId());
                 if (IC2.PLATFORM.isSimulating()) {
-                    player.displayClientMessage(mode.action.getName(), false);
+                    player.displayClientMessage(action.getName(), false);
                 }
             }
         }

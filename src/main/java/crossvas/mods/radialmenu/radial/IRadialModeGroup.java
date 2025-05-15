@@ -4,6 +4,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
+import java.util.List;
+
 /**
  * Represents a mode group for an item or tool that supports switching between different
  * {@link IRadialEnum}-based configurations via a radial menu interface.
@@ -15,17 +17,19 @@ import net.minecraft.util.text.ITextComponent;
  * @param <TYPE> the enum type representing the available modes, which must implement {@link IRadialEnum}
  */
 
-public interface IRadialModeGroup<TYPE extends Enum<TYPE> & IRadialEnum> {
+public interface IRadialModeGroup<TYPE extends IRadialEnum> {
 
     /**
-     * Returns the class of the enum that defines the available modes.
+     * Returns the class that defines the available modes.
      *
      * <p>This is primarily used for reflection, deserialization, or generic handling of
      * the available values.</p>
      *
-     * @return the class object of the mode enum type
+     * @return the class object of the mode type
      */
     Class<TYPE> getModeClass();
+
+    List<TYPE> getAllModes();
 
     /**
      * Retrieves the current mode for the given {@link ItemStack}.
