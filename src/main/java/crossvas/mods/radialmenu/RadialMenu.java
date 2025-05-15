@@ -1,6 +1,7 @@
 package crossvas.mods.radialmenu;
 
 import crossvas.mods.radialmenu.network.RadialMenuNetwork;
+import ic2.core.block.transport.item.TubeAction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -18,6 +19,7 @@ public class RadialMenu {
     public RadialMenu() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.register(this);
+        TubeAction action = new TubeAction("testing", "This is for testing");
     }
 
     @SubscribeEvent

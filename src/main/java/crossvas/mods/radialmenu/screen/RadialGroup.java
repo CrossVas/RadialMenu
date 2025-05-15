@@ -24,12 +24,14 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+
 import static crossvas.mods.radialmenu.utils.RenderHelper.*;
 
-public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
+public class RadialGroup<MODE extends IRadialEnum> {
 
     private final Class<MODE> enumClass;
-    private final MODE[] types;
+    private final List<MODE> types;
     final IRadialModeGroup<MODE> group;
     private final ItemStack stack;
     private MODE selection = null;
@@ -37,7 +39,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
     RadialGroup(ItemStack stack, IRadialModeGroup<MODE> group) {
         this.enumClass = group.getModeClass();
-        this.types = enumClass.getEnumConstants();
+        this.types = group.getAllModes();
         this.group = group;
         this.stack = stack;
     }
@@ -49,7 +51,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
         float centerX = window.getGuiScaledWidth() / 2F;
         float centerY = window.getGuiScaledHeight() / 2F;
-        int activeModes = types.length;
+        int activeModes = types.size();
 
         // --- Render radial ring ---
         matrixStack.pushPose();
@@ -73,7 +75,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
         MODE cur = group.getCurrentMode(stack);
         if (cur != null) {
-            int section = cur.ordinal();
+            int section = group.getAllModes().indexOf(cur);
             float sectionStartAngle = -90F + 360F * (-0.5F + section) / activeModes;
             // current
             RenderHelper.drawGradientTorus(matrixStack, vertexBuffer, INNER, OUTER + 3, sectionStartAngle, 360F / activeModes,
@@ -88,7 +90,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
                 float selectionAngle = angle + 90F + (360F / (2F * activeModes));
                 selectionAngle = (selectionAngle + 360F) % 360F;
                 int selectionDrawnPos = (int) (selectionAngle * activeModes / 360F);
-                selection = types[selectionDrawnPos];
+                selection = types.get(selectionDrawnPos);
                 float startAngle = 360F * (-0.5F / activeModes) + angle;
                 float sizeAngle = 360F / activeModes;
 
@@ -170,7 +172,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
 
     void confirmSelection() {
         if (selection != null) {
-            RadialMenuNetwork.CHANNEL.sendToServer(new RadialModeChangePacket(enumClass, selection.ordinal()));
+            RadialMenuNetwork.CHANNEL.sendToServer(new RadialModeChangePacket(enumClass, types.indexOf(selection)));
         }
     }
 }

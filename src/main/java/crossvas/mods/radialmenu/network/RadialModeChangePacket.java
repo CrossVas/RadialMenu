@@ -1,5 +1,6 @@
 package crossvas.mods.radialmenu.network;
 
+import crossvas.mods.radialmenu.radial.IRadialEnum;
 import crossvas.mods.radialmenu.radial.IRadialModeGroup;
 import crossvas.mods.radialmenu.radial.IRadialModeItem;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 //TODO: add support for EquipmentSlotType instead of hardcodded main hand
@@ -16,7 +18,7 @@ public class RadialModeChangePacket {
     private final int ordinal;
 //    private final EquipmentSlotType slotType;
 
-    public <T extends Enum<T>> RadialModeChangePacket(Class<T> clazz, int ordinal) {
+    public <T extends IRadialEnum> RadialModeChangePacket(Class<T> clazz, int ordinal) {
         this.className = clazz.getName();
         this.ordinal = ordinal;
 //        this.slotType = EquipmentSlotType.MAINHAND;
@@ -43,8 +45,8 @@ public class RadialModeChangePacket {
                     IRadialModeItem item = (IRadialModeItem) stack.getItem();
                     item.getRadialGroups().forEach(group -> {
                         if (group.getModeClass().getName().equals(className)) {
-                            Enum<?>[] values = group.getModeClass().getEnumConstants();
-                            ((IRadialModeGroup) group).setMode(player, stack, values[ordinal]);
+                            List<?> valueList = group.getAllModes();
+                            ((IRadialModeGroup) group).setMode(player, stack, (IRadialEnum) valueList.get(ordinal));
                         }
                     });
                 }
