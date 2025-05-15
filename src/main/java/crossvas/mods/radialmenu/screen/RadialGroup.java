@@ -9,6 +9,7 @@ import crossvas.mods.radialmenu.radial.IRadialEnum;
 import crossvas.mods.radialmenu.radial.IRadialModeGroup;
 import crossvas.mods.radialmenu.utils.RenderHelper;
 import crossvas.mods.radialmenu.utils.StringHelper;
+import crossvas.mods.radialmenu.utils.internal.RColor;
 import ic2.core.IC2;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -22,8 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 import static crossvas.mods.radialmenu.utils.RenderHelper.*;
 
@@ -62,15 +61,15 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
         vertexBuffer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_COLOR);
 
         // base circle
-        drawTorus(matrixStack, vertexBuffer, 0, 360, new Color(0, 0, 0, .5f));
+        drawTorus(matrixStack, vertexBuffer, 0, 360, new RColor(0, 0, 0, .5f));
         // center margin
-        drawTorus(matrixStack, vertexBuffer, (int) (INNER - 7), (int) (INNER - 4), 0, 360, new Color(1F, 1F, 1F, .6F));
+        drawTorus(matrixStack, vertexBuffer, (int) (INNER - 7), (int) (INNER - 4), 0, 360, new RColor(1F, 1F, 1F, .6F));
         // center base
-        RenderHelper.drawTorus(matrixStack, vertexBuffer, 0, (int) (INNER - 7), 0, 360, new Color(0F, 0F, 0F, 0.8F));
+        RenderHelper.drawTorus(matrixStack, vertexBuffer, 0, (int) (INNER - 7), 0, 360, new RColor(0F, 0F, 0F, 0.8F));
         // innerMargin
-        RenderHelper.drawTorus(matrixStack, vertexBuffer, (int) (INNER), (int) (INNER + 3), 0, 360, new Color(0F, 0F, 0F, .6F));
+        RenderHelper.drawTorus(matrixStack, vertexBuffer, (int) (INNER), (int) (INNER + 3), 0, 360, new RColor(0F, 0F, 0F, .6F));
         // outerMargin
-        RenderHelper.drawTorus(matrixStack, vertexBuffer, (int) (OUTER - 3), (int) (OUTER), 0, 360, new Color(1F, 1F, 1F, .3F));
+        RenderHelper.drawTorus(matrixStack, vertexBuffer, (int) (OUTER - 3), (int) (OUTER), 0, 360, new RColor(1F, 1F, 1F, .3F));
 
         MODE cur = group.getCurrentMode(stack);
         if (cur != null) {
@@ -78,7 +77,7 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
             float sectionStartAngle = -90F + 360F * (-0.5F + section) / activeModes;
             // current
             RenderHelper.drawGradientTorus(matrixStack, vertexBuffer, INNER, OUTER + 3, sectionStartAngle, 360F / activeModes,
-                    new Color(242, 213, 156, 40), new Color(255, 255, 255, 40), (int) (OUTER - INNER));
+                    new RColor(242, 213, 156, 40), new RColor(255, 255, 255, 40), (int) (OUTER - INNER));
 
             double xDiff = mouseX - centerX;
             double yDiff = mouseY - centerY;
@@ -94,13 +93,13 @@ public class RadialGroup<MODE extends Enum<MODE> & IRadialEnum> {
                 float sizeAngle = 360F / activeModes;
 
                 // draw selection line
-                RenderHelper.drawTorus(matrixStack, vertexBuffer, INNER - 3F, INNER - 1f, startAngle, sizeAngle, new Color(1F, 1F, 1F, 1F));
+                RenderHelper.drawTorus(matrixStack, vertexBuffer, INNER - 3F, INNER - 1f, startAngle, sizeAngle, new RColor(1F, 1F, 1F, 1F));
                 float hoveredStartAngle = -90F + 360F * (-0.5F + selectionDrawnPos) / activeModes;
                 // selection
                 RenderHelper.drawGradientTorus(matrixStack, vertexBuffer, INNER, OUTER + 3, hoveredStartAngle, 360F / activeModes,
-                        new Color(242, 213, 156, 150), new Color(255, 255, 255, 200), (int) (OUTER - INNER));
+                        new RColor(242, 213, 156, 150), new RColor(255, 255, 255, 200), (int) (OUTER - INNER));
                 // inner margin selected
-                RenderHelper.drawTorus(matrixStack, vertexBuffer, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / activeModes, new Color(0.949F, 0.835F, 0.612F, 0.6F));
+                RenderHelper.drawTorus(matrixStack, vertexBuffer, (int) (INNER), (int) (INNER + 3), hoveredStartAngle, 360F / activeModes, new RColor(0.949F, 0.835F, 0.612F, 0.6F));
             } else {
                 selection = null;
             }

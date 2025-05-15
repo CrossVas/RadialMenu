@@ -1,6 +1,7 @@
 package crossvas.mods.radialmenu.utils;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import crossvas.mods.radialmenu.utils.internal.RColor;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -9,7 +10,6 @@ import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector2f;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +19,11 @@ public class RenderHelper {
     public static final float INNER = 60, OUTER = 120;
     public static final float SELECT_RADIUS = 60;
 
-    public static void drawTorus(MatrixStack matrix, BufferBuilder vertexBuffer, float startAngle, float sizeAngle, Color color) {
+    public static void drawTorus(MatrixStack matrix, BufferBuilder vertexBuffer, float startAngle, float sizeAngle, RColor color) {
         drawTorus(matrix, vertexBuffer, (int) INNER, (int) OUTER, startAngle, sizeAngle, color);
     }
 
-    public static void drawTorus(MatrixStack matrix, BufferBuilder vertexBuffer, float innerRadius, float outerRadius, float startAngle, float sizeAngle, Color color) {
+    public static void drawTorus(MatrixStack matrix, BufferBuilder vertexBuffer, float innerRadius, float outerRadius, float startAngle, float sizeAngle, RColor color) {
         float draws = DRAWS * (sizeAngle / 360F);
         int r = color.getRed(), g = color.getGreen(), b = color.getBlue(), a = color.getAlpha();
         Matrix4f matrix4f = matrix.last().pose();
@@ -50,7 +50,7 @@ public class RenderHelper {
         }
     }
 
-    public static void drawGradientTorus(MatrixStack matrix, BufferBuilder buffer, float innerCircle, float outerCircle, float startAngle, float sizeAngle, Color fromColor, Color toColor, int steps) {
+    public static void drawGradientTorus(MatrixStack matrix, BufferBuilder buffer, float innerCircle, float outerCircle, float startAngle, float sizeAngle, RColor fromColor, RColor toColor, int steps) {
         for (int i = 0; i < steps; i++) {
             float t = i / (float)(steps - 1);
 
@@ -62,7 +62,7 @@ public class RenderHelper {
             int b = (int) lerp(fromColor.getBlue(), toColor.getBlue(), t);
             int a = (int) lerp(fromColor.getAlpha(), toColor.getAlpha(), t);
 
-            drawTorus(matrix, buffer, currentInner, currentOuter, startAngle, sizeAngle, new Color(r, g, b, a));
+            drawTorus(matrix, buffer, currentInner, currentOuter, startAngle, sizeAngle, new RColor(r, g, b, a));
         }
     }
 
