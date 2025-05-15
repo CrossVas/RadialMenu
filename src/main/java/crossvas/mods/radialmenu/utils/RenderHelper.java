@@ -1,7 +1,6 @@
 package crossvas.mods.radialmenu.utils;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -20,53 +19,51 @@ public class RenderHelper {
     public static final float INNER = 60, OUTER = 120;
     public static final float SELECT_RADIUS = 60;
 
-    public static void drawTorus(MatrixStack matrix, float startAngle, float sizeAngle, float gl_r, float gl_g, float gl_b, float gl_a) {
-        RenderSystem.color4f(gl_r, gl_g, gl_b, gl_a);
-        drawTorus(matrix, startAngle, sizeAngle);
+    public static void drawTorus(MatrixStack matrix, BufferBuilder vertexBuffer, float startAngle, float sizeAngle, Color color) {
+        drawTorus(matrix, vertexBuffer, (int) INNER, (int) OUTER, startAngle, sizeAngle, color);
     }
 
-    public static void drawTorus(MatrixStack matrix, float startAngle, float sizeAngle) {
-        drawTorus(matrix, (int) INNER, (int) OUTER, startAngle, sizeAngle);
-    }
-
-    public static void drawTorus(MatrixStack matrix, float innerCircle, float outerCircle, float startAngle, float sizeAngle, float gl_r, float gl_g, float gl_b, float gl_a) {
-        RenderSystem.color4f(gl_r, gl_g, gl_b, gl_a);
-        drawTorus(matrix, innerCircle, outerCircle, startAngle, sizeAngle);
-    }
-
-    public static void drawTorus(MatrixStack matrix, float innerCircle, float outerCircle, float startAngle, float sizeAngle) {
-        BufferBuilder vertexBuffer = Tessellator.getInstance().getBuilder();
-        Matrix4f matrix4f = matrix.last().pose();
-        vertexBuffer.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION);
+    public static void drawTorus(MatrixStack matrix, BufferBuilder vertexBuffer, float innerRadius, float outerRadius, float startAngle, float sizeAngle, Color color) {
         float draws = DRAWS * (sizeAngle / 360F);
-        for (int i = 0; i <= draws; i++) {
-            float angle = (float) Math.toRadians(startAngle + (i / DRAWS) * 360);
-            vertexBuffer.vertex(matrix4f, (float) (outerCircle * Math.cos(angle)), (float) (outerCircle * Math.sin(angle)), 0).endVertex();
-            vertexBuffer.vertex(matrix4f, (float) (innerCircle * Math.cos(angle)), (float) (innerCircle * Math.sin(angle)), 0).endVertex();
+        int r = color.getRed(), g = color.getGreen(), b = color.getBlue(), a = color.getAlpha();
+        Matrix4f matrix4f = matrix.last().pose();
+        for (int i = 0; i < draws; i++) {
+            float angle0 = (float) Math.toRadians(startAngle + (i / DRAWS) * 360);
+            float angle1 = (float) Math.toRadians(startAngle + ((i + 1) / DRAWS) * 360);
+
+            float inner0x = (float) (innerRadius * Math.cos(angle0));
+            float inner0y = (float) (innerRadius * Math.sin(angle0));
+            float inner1x = (float) (innerRadius * Math.cos(angle1));
+            float inner1y = (float) (innerRadius * Math.sin(angle1));
+            float outer0x = (float) (outerRadius * Math.cos(angle0));
+            float outer0y = (float) (outerRadius * Math.sin(angle0));
+            float outer1x = (float) (outerRadius * Math.cos(angle1));
+            float outer1y = (float) (outerRadius * Math.sin(angle1));
+
+            vertexBuffer.vertex(matrix4f, outer0x, outer0y, 0).color(r, g, b, a).endVertex();
+            vertexBuffer.vertex(matrix4f, inner0x, inner0y, 0).color(r, g, b, a).endVertex();
+            vertexBuffer.vertex(matrix4f, inner1x, inner1y, 0).color(r, g, b, a).endVertex();
+
+            vertexBuffer.vertex(matrix4f, outer0x, outer0y, 0).color(r, g, b, a).endVertex();
+            vertexBuffer.vertex(matrix4f, inner1x, inner1y, 0).color(r, g, b, a).endVertex();
+            vertexBuffer.vertex(matrix4f, outer1x, outer1y, 0).color(r, g, b, a).endVertex();
         }
-        vertexBuffer.end();
-        WorldVertexBufferUploader.end(vertexBuffer);
     }
 
-    public static void drawGradientTorus(MatrixStack matrix, float innerCircle, float outerCircle, float startAngle, float sizeAngle, Color fromColor, Color toColor, int steps) {
+    public static void drawGradientTorus(MatrixStack matrix, BufferBuilder buffer, float innerCircle, float outerCircle, float startAngle, float sizeAngle, Color fromColor, Color toColor, int steps) {
         for (int i = 0; i < steps; i++) {
             float t = i / (float)(steps - 1);
 
             float currentInner = innerCircle + (outerCircle - innerCircle) * (i / (float) steps);
             float currentOuter = currentInner + ((outerCircle - innerCircle) / steps);
 
-            // interpolation
-            float r = lerp(fromColor.getRed(),   toColor.getRed(),   t) / 255f;
-            float g = lerp(fromColor.getGreen(), toColor.getGreen(), t) / 255f;
-            float b = lerp(fromColor.getBlue(),  toColor.getBlue(),  t) / 255f;
-            float a = lerp(fromColor.getAlpha(), toColor.getAlpha(), t) / 255f;
+            int r = (int) lerp(fromColor.getRed(), toColor.getRed(), t);
+            int g = (int) lerp(fromColor.getGreen(), toColor.getGreen(), t);
+            int b = (int) lerp(fromColor.getBlue(), toColor.getBlue(), t);
+            int a = (int) lerp(fromColor.getAlpha(), toColor.getAlpha(), t);
 
-            RenderSystem.color4f(r, g, b, a);
-            drawTorus(matrix, currentInner, currentOuter, startAngle, sizeAngle);
+            drawTorus(matrix, buffer, currentInner, currentOuter, startAngle, sizeAngle, new Color(r, g, b, a));
         }
-
-        // reset to white
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private static float lerp(float a, float b, float t) {
