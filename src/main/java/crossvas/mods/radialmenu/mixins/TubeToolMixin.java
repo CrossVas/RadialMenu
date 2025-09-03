@@ -1,8 +1,8 @@
 package crossvas.mods.radialmenu.mixins;
 
-import crossvas.mods.radialmenu.radial.IRadialModeGroup;
+import crossvas.mods.radialmenu.radial.IRadialMenu;
 import crossvas.mods.radialmenu.radial.IRadialModeItem;
-import crossvas.mods.radialmenu.utils.ItemModeGroups;
+import crossvas.mods.radialmenu.utils.RadialComponents;
 import ic2.core.item.tool.TubeTool;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -13,9 +13,9 @@ import java.util.List;
 public class TubeToolMixin implements IRadialModeItem {
 
     @Override
-    public List<IRadialModeGroup<?>> getRadialGroups() {
-        List<IRadialModeGroup<?>> groups = new ArrayList<>();
-        groups.add(new ItemModeGroups.TubeToolGroup());
-        return groups;
+    public List<IRadialMenu<?>> getRadialMenus() {
+        List<IRadialMenu<?>> menus = new ArrayList<>();
+        menus.add(new RadialComponents.TubeToolMenu());
+        return menus;
     }
 }

@@ -1,5 +1,6 @@
 package crossvas.mods.radialmenu.radial;
 
+import crossvas.mods.radialmenu.RadialMenu;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -21,7 +22,9 @@ public interface IRadialEnum {
      *
      * @return the {@link ResourceLocation} of the icon.
      */
-    ResourceLocation getIcon();
+    default ResourceLocation getIcon() {
+        return RadialMenu.id("textures/gui/blank.png");
+    }
 
     /**
      * Returns a detailed description of this mode or entry, typically shown

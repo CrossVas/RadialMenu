@@ -1,7 +1,7 @@
 package crossvas.mods.radialmenu.network;
 
 import crossvas.mods.radialmenu.radial.IRadialEnum;
-import crossvas.mods.radialmenu.radial.IRadialModeGroup;
+import crossvas.mods.radialmenu.radial.IRadialMenu;
 import crossvas.mods.radialmenu.radial.IRadialModeItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -43,10 +43,10 @@ public class RadialModeChangePacket {
                 ItemStack stack = player.getMainHandItem();
                 if (!stack.isEmpty() && stack.getItem() instanceof IRadialModeItem) {
                     IRadialModeItem item = (IRadialModeItem) stack.getItem();
-                    item.getRadialGroups().forEach(group -> {
+                    item.getRadialMenus().forEach(group -> {
                         if (group.getModeClass().getName().equals(className)) {
                             List<?> valueList = group.getAllModes();
-                            ((IRadialModeGroup) group).setMode(player, stack, (IRadialEnum) valueList.get(ordinal));
+                            ((IRadialMenu) group).setMode(player, stack, (IRadialEnum) valueList.get(ordinal));
                         }
                     });
                 }

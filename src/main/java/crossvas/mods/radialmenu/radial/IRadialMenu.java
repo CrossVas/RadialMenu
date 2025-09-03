@@ -7,17 +7,17 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.List;
 
 /**
- * Represents a mode group for an item or tool that supports switching between different
+ * Represents a mode menu for an item or tool that supports switching between different
  * {@link IRadialEnum}-based configurations via a radial menu interface.
  *
  * <p>This interface abstracts the logic for querying, updating, and interacting with an
- * item's mode. Each mode group typically corresponds to a single tool or system that
+ * item's mode. Each mode menu typically corresponds to a single tool or system that
  * supports one set of modes (such as a tool with different behaviors or configurations).</p>
  *
  * @param <TYPE> the enum type representing the available modes, which must implement {@link IRadialEnum}
  */
 
-public interface IRadialModeGroup<TYPE extends IRadialEnum> {
+public interface IRadialMenu<TYPE extends IRadialEnum> {
 
     /**
      * Returns the class that defines the available modes.

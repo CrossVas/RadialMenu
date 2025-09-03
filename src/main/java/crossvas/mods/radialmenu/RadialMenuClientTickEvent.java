@@ -1,6 +1,6 @@
 package crossvas.mods.radialmenu;
 
-import crossvas.mods.radialmenu.radial.IRadialModeGroup;
+import crossvas.mods.radialmenu.radial.IRadialMenu;
 import crossvas.mods.radialmenu.radial.IRadialModeItem;
 import crossvas.mods.radialmenu.screen.RadialScreen;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,7 @@ public class RadialMenuClientTickEvent {
         if (!(stack.getItem() instanceof IRadialModeItem)) return;
 
         IRadialModeItem item = (IRadialModeItem) stack.getItem();
-        for (IRadialModeGroup<?> group : item.getRadialGroups()) {
+        for (IRadialMenu<?> group : item.getRadialMenus()) {
             if (group.getKeyStatusDown(player)) {
                 if (minecraft.screen == null) {
                     minecraft.setScreen(new RadialScreen(stack, item, group.getModeClass()));

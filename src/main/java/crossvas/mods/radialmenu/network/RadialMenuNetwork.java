@@ -26,5 +26,12 @@ public class RadialMenuNetwork {
                 RadialModeChangePacket::decode,
                 RadialModeChangePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(packetId++,
+                RadialTogglePacket.class,
+                RadialTogglePacket::encode,
+                RadialTogglePacket::decode,
+                RadialTogglePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 }

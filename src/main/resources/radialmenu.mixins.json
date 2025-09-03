@@ -2,6 +2,7 @@
   "required": true,
   "package": "crossvas.mods.radialmenu.mixins",
   "mixins": [
+    "PainterMixin",
     "TubeToolMixin"
   ],
   "minVersion": "0.8"
