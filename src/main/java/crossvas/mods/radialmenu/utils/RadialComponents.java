@@ -147,4 +147,77 @@ public class RadialComponents {
             }
         }
     }
+
+    public static class HoeMenu implements IRadialMenu<HoeMenu.HoeEnum> {
+
+        public static final String RANGE_TAG = "radius";
+
+        @Override
+        public Class<HoeEnum> getModeClass() {
+            return HoeEnum.class;
+        }
+
+        @Override
+        public List<HoeEnum> getAllModes() {
+            return Arrays.asList(HoeEnum.VALUES);
+        }
+
+        @Override
+        public HoeEnum getCurrentMode(ItemStack stack) {
+            CompoundNBT tag = stack.getOrCreateTag();
+            return HoeEnum.getFromId(tag.getInt(RANGE_TAG));
+        }
+
+        @Override
+        public void setMode(PlayerEntity player, ItemStack stack, HoeEnum mode) {
+            CompoundNBT tag = stack.getOrCreateTag();
+            IRadialEnum existing = getCurrentMode(stack);
+            if (existing != mode) {
+                tag.putInt(RANGE_TAG, mode.radius);
+                if (IC2.PLATFORM.isSimulating()) {
+                    player.displayClientMessage(mode.getDescription(), false);
+                }
+            }
+        }
+
+        @Override
+        public boolean getKeyStatusDown(PlayerEntity player) {
+            return IC2.KEYBOARD.isModeSwitchKeyDown(player);
+        }
+
+        @Override
+        public ITextComponent getModeMessage() {
+            return new StringTextComponent("Hoe Radius");
+        }
+
+        public enum HoeEnum implements IRadialEnum {
+            RADIUS_0(0),
+            RADIUS_1(1),
+            RADIUS_2(2),
+            RADIUS_3(3),
+            RADIUS_4(4),
+            RADIUS_5(5);
+
+            int radius;
+            public static final HoeEnum[] VALUES = values();
+
+            HoeEnum(int radius) {
+                this.radius = radius;
+            }
+
+            @Override
+            public ITextComponent getTextForDisplay() {
+                return new StringTextComponent("Radius: " + radius);
+            }
+
+            @Override
+            public ITextComponent getDescription() {
+                return new TranslationTextComponent("Hoe Radius: %s Block(s)", radius);
+            }
+
+            public static HoeEnum getFromId(int id) {
+                return VALUES[id % VALUES.length];
+            }
+        }
+    }
 }

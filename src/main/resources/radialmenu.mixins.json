@@ -2,6 +2,7 @@
   "required": true,
   "package": "crossvas.mods.radialmenu.mixins",
   "mixins": [
+    "AdvancedHoeMixin",
     "PainterMixin",
     "TubeToolMixin"
   ],
